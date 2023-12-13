@@ -14,7 +14,7 @@ import {
 
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import Link from 'next/link';
-import Menu from '@/components/menu';
+import { Menu } from '@/components/menu';
 
 const inter = Inter({ subsets: ['latin'] });
 

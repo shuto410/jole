@@ -1,3 +1,4 @@
+'use client';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -27,11 +28,26 @@ import { mockUsers } from './data';
 import { Search } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useEffect, useState } from 'react';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { firestore } from '@/lib/firebaseConfig';
 
 export default function Page() {
-  const users = mockUsers;
-  const userCards = users.map((user) => {
-    const keywordBadges = user.keywords.map((keyword) => (
+  const [users, setUsers] = useState<User[]>([]);
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(firestore, 'users'));
+      const docs: User[] = [];
+      querySnapshot.forEach((doc) => {
+        docs.push(doc.data() as User);
+      });
+      setUsers(docs);
+    }
+    fetchData();
+  }, []);
+
+  const userCards = users?.map((user) => {
+    const keywordBadges = user.keywords?.map((keyword) => (
       <span key={keyword.label} className='pr-1'>
         <Link
           href={user.imageUrl}
