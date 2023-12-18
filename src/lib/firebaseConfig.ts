@@ -1,7 +1,7 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { Analytics, getAnalytics } from 'firebase/analytics';
 import { getFirestore, Firestore } from 'firebase/firestore';
-import { getAuth, Auth } from 'firebase/auth';
+import { getAuth, Auth, GoogleAuthProvider } from 'firebase/auth';
 
 // .envファイルで設定した環境変数をfirebaseConfigに入れる
 const firebaseConfig = {
@@ -17,14 +17,16 @@ let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
 let analytics: Analytics;
+let provider: GoogleAuthProvider;
 
 console.log(firebaseConfig);
 // サーバーサイドでレンダリングするときにエラーが起きないようにするための記述
 if (typeof window !== 'undefined' && !getApps().length) {
   console.log(firebaseConfig);
   firebaseApp = initializeApp(firebaseConfig);
-  auth = getAuth();
+  auth = getAuth(firebaseApp);
   firestore = getFirestore();
   analytics = getAnalytics(firebaseApp);
+  provider = new GoogleAuthProvider();
 }
-export { firebaseApp, auth, firestore, analytics };
+export { firebaseApp, auth, firestore, analytics, provider };

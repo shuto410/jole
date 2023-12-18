@@ -1,6 +1,6 @@
-import { User } from './page';
+import { PublicUserProfile } from './page';
 
-export const mockUsers: User[] = [
+export const mockUsers: PublicUserProfile[] = [
   {
     name: 'Mike',
     imageUrl: '',

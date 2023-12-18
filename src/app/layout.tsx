@@ -1,20 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import './globals.css';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-} from '@/components/ui/navigation-menu';
-
-import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import Link from 'next/link';
-import { Menu } from '@/components/menu';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -29,11 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
-      <body className={inter.className}>
-        <Menu />
-        <div>{children}</div>
-      </body>
-    </html>
+    <GoogleOAuthProvider
+      clientId={process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID as string}
+    >
+      <html lang='en'>
+        <body className={inter.className}>
+          <div>{children}</div>
+          <Toaster />
+        </body>
+      </html>
+    </GoogleOAuthProvider>
   );
 }

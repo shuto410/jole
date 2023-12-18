@@ -33,13 +33,13 @@ import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { firestore } from '@/lib/firebaseConfig';
 
 export default function Page() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<PublicUserProfile[]>([]);
   useEffect(() => {
     async function fetchData() {
       const querySnapshot = await getDocs(collection(firestore, 'users'));
-      const docs: User[] = [];
+      const docs: PublicUserProfile[] = [];
       querySnapshot.forEach((doc) => {
-        docs.push(doc.data() as User);
+        docs.push(doc.data() as PublicUserProfile);
       });
       setUsers(docs);
     }
@@ -50,7 +50,7 @@ export default function Page() {
     const keywordBadges = user.keywords?.map((keyword) => (
       <span key={keyword.label} className='pr-1'>
         <Link
-          href={user.imageUrl}
+          href={user.imageUrl ?? 'https://picsum.photos/seed/test/200/200'}
           className={badgeVariants({ variant: 'default' })}
         >
           {keyword.label}
@@ -103,13 +103,15 @@ export default function Page() {
     </div>
   );
 }
-export type User = {
+export type PublicUserProfile = {
   name: string;
-  imageUrl: string;
+  imageUrl?: string;
   age: number;
   keywords: {
     label: string;
     link: string;
   }[];
-  selfIntroduction: string;
+  language: 'Japanese' | 'English' | 'Other';
+  targetLanguage: 'Japanese' | 'English' | 'Other';
+  selfIntroduction?: string;
 };
