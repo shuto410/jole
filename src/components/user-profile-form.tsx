@@ -3,12 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import { Textarea } from './ui/textarea';
-import { auth, firestore } from '@/lib/firebaseConfig';
-import { useEffect, useState } from 'react';
+import { firestore } from '@/lib/firebaseConfig';
 import * as z from 'zod';
 
-import { useRouter } from 'next/navigation';
-import { PublicUserProfile } from '@/app/(auth)/search/page';
 import { useForm } from 'react-hook-form';
 
 import {
@@ -29,26 +26,15 @@ import {
 } from './ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
+import { PublicUserProfile } from '@/lib/types';
 
-export function UserProfileForm() {
+export function UserProfileForm({
+  defaultValues,
+  submitButtonText,
+  userId,
+  onSuccess,
+}: UserProfileFormProps) {
   const { toast } = useToast();
-  const router = useRouter();
-  const [userId, setUserId] = useState<string | undefined>(undefined);
-  const checkLoginStatus = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      setUserId(user.uid);
-      console.log('Logged in');
-      console.log('uid: ', user.uid);
-    } else {
-      console.error('User not logged in');
-      router.push('/landing');
-    }
-  };
-
-  useEffect(() => {
-    checkLoginStatus();
-  });
 
   const formSchema = z.object({
     name: z
@@ -64,7 +50,7 @@ export function UserProfileForm() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: defaultValues ?? {
       name: '',
       selfIntroduction: '',
     },
@@ -78,6 +64,7 @@ export function UserProfileForm() {
       // const docRef = await addDoc(collection(firestore, 'users'), user);
       await setDoc(doc(firestore, 'users', userId), userProfile);
       console.log('Document written');
+      onSuccess?.();
       toast({
         title: 'You submitted the profile.',
       });
@@ -107,24 +94,21 @@ export function UserProfileForm() {
       keywords: [],
       targetLanguage: values.language === 'Japanese' ? 'English' : 'Japanese',
     };
-    sendUserProfile(userProfile, userId);
+    await sendUserProfile(userProfile, userId);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
         <FormField
           control={form.control}
           name='name'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>User name</FormLabel>
+              <FormLabel>Display name</FormLabel>
               <FormControl>
                 <Input placeholder='Name' {...field} />
               </FormControl>
-              {/* <FormDescription>
-                This is your public display name.
-              </FormDescription> */}
               <FormMessage />
             </FormItem>
           )}
@@ -179,8 +163,17 @@ export function UserProfileForm() {
             </FormItem>
           )}
         />
-        <Button type='submit'>Submit</Button>
+        <Button type='submit' className='w-full'>
+          {submitButtonText}
+        </Button>
       </form>
     </Form>
   );
 }
+
+export type UserProfileFormProps = {
+  submitButtonText: string;
+  userId: string;
+  defaultValues?: PublicUserProfile;
+  onSuccess?: () => void;
+};

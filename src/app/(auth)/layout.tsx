@@ -1,5 +1,5 @@
 import '../globals.css';
-import { Menu } from '@/components/menu';
+import { Header } from '@/components/header';
 
 export default function AuthLayout({
   children,
@@ -7,9 +7,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <Menu />
+    <div className='overflow-hidden h-screen'>
+      <Header />
       <div>{children}</div>
-    </>
+    </div>
   );
 }
