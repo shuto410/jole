@@ -1,6 +1,6 @@
 'use client';
 import { auth, usersCollectionRef } from '@/lib/firebaseConfig';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { UserProfileForm } from '../user-profile-form';
 import {
   Sheet,
@@ -17,9 +17,10 @@ import { PublicUserProfile } from '@/lib/types';
 import { LoginButton } from '../buttons/login-button';
 import { fetchPublicUserProfile } from '@/lib/firebaseApi';
 import { set } from 'zod';
+import { UserAuthContext } from '@/contexts/user-auth-context';
 
 export function UserDialogButton() {
-  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const { userId, setUserId } = useContext(UserAuthContext);
   const [publicUserProfile, setPublicUserProfile] = useState<
     PublicUserProfile | undefined
   >(undefined);

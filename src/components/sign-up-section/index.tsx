@@ -9,12 +9,13 @@ import {
 } from '@/components/ui/card';
 import { LoginButton } from '../buttons/login-button';
 import { SignUpDialog } from './sign-up-dialog';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { toast } from '../ui/use-toast';
+import { UserAuthContext } from '@/contexts/user-auth-context';
 
 export function SignUpSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const { userId, setUserId } = useContext(UserAuthContext);
 
   const mockHandleLogin = () => {
     setIsDialogOpen(true);
