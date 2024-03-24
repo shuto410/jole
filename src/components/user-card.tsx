@@ -13,6 +13,7 @@ export function UserCard(props: UserCardProps) {
     selfIntroduction,
     imageUrl,
     headerButtonLabel,
+    headerIcon,
     onHeaderButtonClick,
   } = props;
 
@@ -47,11 +48,19 @@ export function UserCard(props: UserCardProps) {
                 {headerButtonLabel}
               </Button>
             )}
+            {headerIcon && (
+              <div
+                onClick={onHeaderButtonClick}
+                className='rounded-full hover:bg-rose-200 px-2 pt-[0.6rem] pb-[0.4rem]'
+              >
+                {headerIcon}
+              </div>
+            )}
           </div>
         </div>
         <div className='pt-2'>{keywordBadges}</div>
 
-        <div className='text-sm font-medium pt-4 leading-5	'>
+        <div className='text-sm font-medium pt-4 leading-5 line-clamp-4'>
           {selfIntroduction}
         </div>
       </CardContent>
@@ -61,5 +70,6 @@ export function UserCard(props: UserCardProps) {
 
 export type UserCardProps = PublicUserProfile & {
   headerButtonLabel?: string;
+  headerIcon?: React.ReactNode;
   onHeaderButtonClick?: () => void;
 };

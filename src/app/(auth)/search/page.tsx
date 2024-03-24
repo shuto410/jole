@@ -1,19 +1,14 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { badgeVariants } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
-import { Search } from 'lucide-react';
+import { Heart, Search } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '@/lib/firebaseConfig';
 import { PublicUserProfile } from '@/lib/types';
-import { UserIcon } from '@/components/user-icon';
 import { UserCard } from '@/components/user-card';
 
 export default function Page() {
@@ -45,9 +40,9 @@ export default function Page() {
             {users.map((user) => (
               <div
                 key={user.name}
-                className='w-[275px] min-h-[100px] max-h-[200px]'
+                className='w-[275px] min-h-[100px] max-h-[300px]'
               >
-                <UserCard {...user} headerButtonLabel='Request' />
+                <UserCard {...user} headerIcon={<Heart />} />
               </div>
             ))}
           </div>

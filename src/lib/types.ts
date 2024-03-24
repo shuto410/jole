@@ -25,7 +25,15 @@ export type Partner = {
 };
 
 export type Message = {
-  isUser: boolean;
+  uid: string;
   text: string;
-  arrivedAt?: `${number}:${number} ${'PM' | 'AM'}`;
+  sentAt: number; // UNIX Timestamp
+};
+
+export type Chats = {
+  [uid: string]: Chat;
+};
+
+export type Chat = {
+  messages: Message[];
 };

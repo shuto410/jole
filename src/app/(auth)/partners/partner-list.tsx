@@ -1,16 +1,19 @@
 import { UserIcon } from '@/components/user-icon';
-import { Partner } from '@/lib/types';
+import { PartnerProfile } from './page';
 
 export function PartnerList({ partners, onClickPartner }: PartnerListProps) {
-  return partners.map(({ imageUrl, userName, lastMessage }, index) => {
+  return partners.map(({ id, imageUrl, userName, lastMessage }) => {
     return (
       <div
-        key='key'
-        className='flex items-center p-3 border-b'
-        onClick={() => onClickPartner(index)}
+        key={id}
+        className='flex items-center p-3 border-b hover:bg-gray-100'
+        onClick={() => onClickPartner(id)}
       >
-        <UserIcon imageUrl={imageUrl} fallbackText={userName.slice(0, 2)} />
-        <span className='w-12 pl-3'>{userName}</span>
+        <UserIcon
+          imageUrl={imageUrl ?? ''}
+          fallbackText={userName.slice(0, 2)}
+        />
+        <span className='pl-3'>{userName}</span>
         <span className='text-sm text-muted-foreground pl-3'>
           {lastMessage.substring(0, 25)}...
         </span>
@@ -20,6 +23,6 @@ export function PartnerList({ partners, onClickPartner }: PartnerListProps) {
 }
 
 export type PartnerListProps = {
-  partners: Partner[];
-  onClickPartner: (index: number) => void;
+  partners: PartnerProfile[];
+  onClickPartner: (id: string) => void;
 };

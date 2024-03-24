@@ -8,21 +8,27 @@ export function Header() {
   const { userId } = useContext(UserAuthContext);
   return (
     <>
-      <nav className='flex py-2 pl-4 justify-between items-center border-b border-slate-300 bg-white	'>
+      <nav className='flex py-1 pl-4 justify-between items-center border-b border-slate-300 bg-white	'>
         <div>
           <Link href='/home'>
-            <span className='text-base pr-4 '>Home</span>
+            <span className='text-base py-1 px-2 hover:text-sky-600'>Home</span>
           </Link>
           <Link href='/search'>
-            <span className='text-base pr-4'>Search</span>
+            <span className='text-base py-1 px-2 hover:text-sky-600'>
+              Search
+            </span>
           </Link>
           {userId && (
             <>
               <Link href='/partners'>
-                <span className='text-base pr-4'>Partners</span>
+                <span className='text-base py-1 px-2  hover:text-sky-600'>
+                  Partners
+                </span>
               </Link>
               <Link href='/requests'>
-                <span className='text-base pr-4'>Requests</span>
+                <span className='text-base py-1 px-2 hover:text-sky-600'>
+                  Requests
+                </span>
               </Link>
             </>
           )}

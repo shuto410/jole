@@ -7,7 +7,7 @@ import {
   collection,
 } from 'firebase/firestore';
 import { getAuth, Auth, GoogleAuthProvider } from 'firebase/auth';
-import { PublicUserProfile, UserRelationship } from './types';
+import { Chats, PublicUserProfile, UserRelationship } from './types';
 
 // .envファイルで設定した環境変数をfirebaseConfigに入れる
 const firebaseConfig = {
@@ -26,6 +26,7 @@ let analytics: Analytics;
 let provider: GoogleAuthProvider;
 let usersCollectionRef: CollectionReference<PublicUserProfile>;
 let relationshipsCollectionRef: CollectionReference<UserRelationship>;
+let chatsCollectionRef: CollectionReference<Chats>;
 
 console.log(firebaseConfig);
 // サーバーサイドでレンダリングするときにエラーが起きないようにするための記述
@@ -44,6 +45,10 @@ if (typeof window !== 'undefined' && !getApps().length) {
     firestore,
     'relationships',
   ) as CollectionReference<UserRelationship>;
+  chatsCollectionRef = collection(
+    firestore,
+    'chats',
+  ) as CollectionReference<Chats>;
 }
 export {
   firebaseApp,
@@ -53,4 +58,5 @@ export {
   provider,
   usersCollectionRef,
   relationshipsCollectionRef,
+  chatsCollectionRef,
 };
