@@ -8,7 +8,6 @@ import { fetchAllChats, fetchPartnerProfiles } from '@/lib/firebaseApi';
 import { Chats } from '@/lib/types';
 
 export default function Page() {
-  // COMMENT: modify temp message display and date time format
   const { userId } = useContext(UserAuthContext);
   const [partnerProfiles, setPartnerProfiles] = useState<PartnerProfile[]>([]);
   const [chats, setChats] = useState<Chats>({});
@@ -22,7 +21,7 @@ export default function Page() {
         const partnerUserProfiles = await fetchPartnerProfiles(userId);
         const partnerProfiles = partnerUserProfiles.map((profile) => {
           return {
-            id: profile.uid,
+            id: profile.id,
             userName: profile.name,
             imageUrl: profile.imageUrl,
             lastMessage: 'temp',

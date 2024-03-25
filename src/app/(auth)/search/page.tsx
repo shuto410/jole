@@ -5,25 +5,39 @@ import { Button } from '@/components/ui/button';
 import { Heart, Search } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '@/lib/firebaseConfig';
-import { PublicUserProfile } from '@/lib/types';
+import { PublicUserProfile, PublicUserProfileWithId } from '@/lib/types';
 import { UserCard } from '@/components/user-card';
+import { sendPartnerRequest } from '@/lib/firebaseApi';
+import { UserAuthContext } from '@/contexts/user-auth-context';
 
 export default function Page() {
-  const [users, setUsers] = useState<PublicUserProfile[]>([]);
+  const { userId } = useContext(UserAuthContext);
+  const [users, setUsers] = useState<PublicUserProfileWithId[]>([]);
+
   useEffect(() => {
     async function fetchData() {
       const querySnapshot = await getDocs(collection(firestore, 'users'));
-      const docs: PublicUserProfile[] = [];
+      const docs: PublicUserProfileWithId[] = [];
       querySnapshot.forEach((doc) => {
-        docs.push(doc.data() as PublicUserProfile);
+        const profile = doc.data() as PublicUserProfile;
+        docs.push({
+          ...profile,
+          id: doc.id,
+        });
       });
       setUsers(docs);
     }
     fetchData();
   }, []);
+
+  const handleHeaderButtonClick = (targetUserId: string) => () => {
+    if (userId) {
+      sendPartnerRequest(userId, targetUserId);
+    }
+  };
 
   return (
     <div className='flex justify-center'>
@@ -42,7 +56,11 @@ export default function Page() {
                 key={user.name}
                 className='w-[275px] min-h-[100px] max-h-[300px]'
               >
-                <UserCard {...user} headerIcon={<Heart />} />
+                <UserCard
+                  {...user}
+                  headerIcon={<Heart />}
+                  onHeaderButtonClick={handleHeaderButtonClick(user.id)}
+                />
               </div>
             ))}
           </div>

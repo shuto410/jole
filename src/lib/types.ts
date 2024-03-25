@@ -11,6 +11,10 @@ export type PublicUserProfile = {
   selfIntroduction?: string;
 };
 
+export type PublicUserProfileWithId = PublicUserProfile & {
+  id: string;
+};
+
 export type UserRelationship = {
   pendingRequestUserIds: string[];
   requestingUserIds: string[];

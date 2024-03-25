@@ -5,7 +5,7 @@ import {
   chatsCollectionRef,
   firestore,
 } from '@/lib/firebaseConfig';
-import { PublicUserProfile } from './types';
+import { PublicUserProfile, PublicUserProfileWithId } from './types';
 
 export const fetchPublicUserProfile = async (uid: string) => {
   const userDocRef = doc(usersCollectionRef, uid);
@@ -51,7 +51,6 @@ export const fetchPartnerUserIds = async (uid: string) => {
   return userRelationship?.partnerUserIds || [];
 };
 
-//COMMENT: fetch partners
 export const fetchPartnerProfiles = async (uid: string) => {
   const partnerUserIds = await fetchPartnerUserIds(uid);
   if (partnerUserIds.length === 0) {
@@ -61,7 +60,7 @@ export const fetchPartnerProfiles = async (uid: string) => {
   const partnerUserProfiles = await Promise.all(
     partnerUserIds.map(async (uid: string) => {
       return {
-        uid: uid,
+        id: uid,
         ...(await fetchPublicUserProfile(uid)),
       };
     }),
@@ -69,7 +68,7 @@ export const fetchPartnerProfiles = async (uid: string) => {
 
   return partnerUserProfiles.filter(
     (profile) => profile !== null,
-  ) as (PublicUserProfile & { uid: string })[];
+  ) as PublicUserProfileWithId[];
 };
 
 export const fetchAllChats = async (uid: string) => {
@@ -114,11 +113,11 @@ export const sendPartnerRequest = async (uid: string, targetUserId: string) => {
     return;
   }
 
-  const targetUserRelationship = await fetchUserRelationship(uid);
+  const targetUserRelationship = await fetchUserRelationship(targetUserId);
   if (!targetUserRelationship) return;
 
   const { pendingRequestUserIds } = targetUserRelationship;
-  const newPendingRequestUserIds = [...pendingRequestUserIds, targetUserId];
+  const newPendingRequestUserIds = [...pendingRequestUserIds, uid];
   const newTargetUserRelationship = {
     ...targetUserRelationship,
     pendingRequestUserIds: newPendingRequestUserIds,
