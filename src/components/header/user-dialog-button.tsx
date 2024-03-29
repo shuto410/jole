@@ -1,6 +1,6 @@
 'use client';
-import { auth, usersCollectionRef } from '@/lib/firebaseConfig';
-import { useContext, useState } from 'react';
+import { auth } from '@/lib/firebaseConfig';
+import { useContext, useEffect, useState } from 'react';
 import { UserProfileForm } from '../user-profile-form';
 import {
   Sheet,
@@ -12,42 +12,44 @@ import {
 } from '@/components/ui/sheet';
 import { SignUpSection } from '../sign-up-section';
 import { UserIcon } from '../user-icon';
-import { doc, getDoc } from 'firebase/firestore';
 import { PublicUserProfile } from '@/lib/types';
 import { LoginButton } from '../buttons/login-button';
 import { fetchPublicUserProfile } from '@/lib/firebaseApi';
-import { set } from 'zod';
 import { UserAuthContext } from '@/contexts/user-auth-context';
+import { onAuthStateChanged } from '@firebase/auth';
 
 export function UserDialogButton() {
   const { userId, setUserId } = useContext(UserAuthContext);
   const [publicUserProfile, setPublicUserProfile] = useState<
     PublicUserProfile | undefined
   >(undefined);
-  const checkLoginStatus = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      setUserId(user.uid);
-      const userProfile = await fetchPublicUserProfile(user.uid);
+  const fetchLatestProfile = async () => {
+    if (userId) {
+      const userProfile = await fetchPublicUserProfile(userId);
       if (userProfile) setPublicUserProfile(userProfile);
-      console.log('Logged in');
-      console.log('uid: ', user.uid);
-    } else {
-      console.error('User not logged in');
     }
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) setPublicUserProfile(undefined);
-  };
+  useEffect(() => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log('Logged in');
+        setUserId(user.uid);
+        const userProfile = await fetchPublicUserProfile(user.uid);
+        if (userProfile) setPublicUserProfile(userProfile);
+      } else {
+        console.error('User not logged in');
+      }
+    });
+  }, []);
 
   return (
-    <Sheet onOpenChange={handleOpenChange}>
+    <Sheet>
       <SheetTrigger>
         <UserIcon
           imageUrl='https://github.com/shadcn.png'
           fallbackText='OM'
-          onClick={checkLoginStatus}
+          onClick={fetchLatestProfile}
         />
       </SheetTrigger>
       <SheetContent>

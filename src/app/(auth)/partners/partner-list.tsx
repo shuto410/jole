@@ -6,7 +6,7 @@ export function PartnerList({ partners, onClickPartner }: PartnerListProps) {
     return (
       <div
         key={id}
-        className='flex items-center p-3 border-b hover:bg-gray-100'
+        className='flex items-center p-3 border-b hover:bg-sky-50 active:bg-sky-200'
         onClick={() => onClickPartner(id)}
       >
         <UserIcon

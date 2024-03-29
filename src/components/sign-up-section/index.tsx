@@ -32,7 +32,7 @@ export function SignUpSection() {
   };
   return (
     <>
-      <Card className='bg-slate-100'>
+      <Card className='bg-sky-100'>
         <CardHeader>
           <CardTitle>New to Jole?</CardTitle>
           <CardDescription>

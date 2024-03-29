@@ -1,4 +1,5 @@
 import { Badge, BadgeProps } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { Message } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -9,7 +10,7 @@ export function Chat({ userId, messages }: ChatProps) {
     const justifyContentClassName = isUser ? 'justify-end' : 'justify-start';
 
     const badgeVariant = (
-      isUser ? 'default' : 'secondary'
+      isUser ? 'default' : 'white'
     ) satisfies BadgeProps['variant'];
 
     return (

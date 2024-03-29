@@ -4,8 +4,16 @@ import { PartnerList } from './partner-list';
 import { Chat } from './chat';
 import { useContext, useEffect, useState } from 'react';
 import { UserAuthContext } from '@/contexts/user-auth-context';
-import { fetchAllChats, fetchPartnerProfiles } from '@/lib/firebaseApi';
+import {
+  fetchAllChats,
+  fetchPartnerProfiles,
+  sendChatMessage,
+} from '@/lib/firebaseApi';
 import { Chats } from '@/lib/types';
+import { Textarea } from '@/components/ui/textarea';
+import { Send, ImagePlus } from 'lucide-react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { chatsCollectionRef } from '@/lib/firebaseConfig';
 
 export default function Page() {
   const { userId } = useContext(UserAuthContext);
@@ -14,45 +22,89 @@ export default function Page() {
   const [selectedPartnerId, setSelectedPartnerId] = useState<
     string | undefined
   >(undefined);
+  const [message, setMessage] = useState<string>('');
+
+  async function fetchData() {
+    if (userId) {
+      const partnerUserProfiles = await fetchPartnerProfiles(userId);
+      const partnerProfiles = partnerUserProfiles.map((profile) => {
+        return {
+          id: profile.id,
+          userName: profile.name,
+          imageUrl: profile.imageUrl,
+          lastMessage: 'temp',
+        } satisfies PartnerProfile;
+      });
+      const chats = await fetchAllChats(userId);
+      setChats(chats);
+      setPartnerProfiles(partnerProfiles);
+    }
+  }
+
+  const handleClickSendButton = async () => {
+    if (userId && selectedPartnerId) {
+      await sendChatMessage(userId, selectedPartnerId, message);
+      await fetchData();
+      // COMMENT: display message on local immediately
+      // COMMENT: clear message input
+    }
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      if (userId) {
-        const partnerUserProfiles = await fetchPartnerProfiles(userId);
-        const partnerProfiles = partnerUserProfiles.map((profile) => {
-          return {
-            id: profile.id,
-            userName: profile.name,
-            imageUrl: profile.imageUrl,
-            lastMessage: 'temp',
-          } satisfies PartnerProfile;
-        });
-        const chats = await fetchAllChats(userId);
-        setChats(chats);
-        setPartnerProfiles(partnerProfiles);
-        setSelectedPartnerId(partnerProfiles[0]?.id);
-      }
-    }
     fetchData();
-  });
+    if (userId) {
+      const unsub = onSnapshot(doc(chatsCollectionRef, userId), (doc) => {
+        setChats(doc.data() || {});
+      });
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (selectedPartnerId === undefined) {
+      setSelectedPartnerId(partnerProfiles?.[0]?.id);
+    }
+  }, [partnerProfiles, selectedPartnerId]);
 
   return (
     <div className='flex'>
-      <ScrollArea className='border-r-2 h-screen w-[450px]'>
+      <ScrollArea className='border-r-2 h-screen max-w-[450px]'>
         <PartnerList
           partners={partnerProfiles}
           onClickPartner={setSelectedPartnerId}
         />
       </ScrollArea>
-      <ScrollArea className='border-r-2 h-screen w-full'>
-        {/* // COMMENT: impl lazy loading for user id */}
-        {selectedPartnerId && userId && (
-          <Chat
-            userId={userId}
-            messages={chats[selectedPartnerId]?.messages || []}
+      <div className='grow'>
+        <ScrollArea className='h-screen'>
+          {/* // COMMENT: impl lazy loading for user id */}
+          {selectedPartnerId && userId && (
+            <Chat
+              userId={userId}
+              messages={chats[selectedPartnerId]?.messages || []}
+            />
+          )}
+          {/* for scroll margin */}
+          <div className='h-[200px]'></div>
+        </ScrollArea>
+        <div className='sticky bottom-0 p-3 '>
+          <Textarea
+            placeholder='Type a message'
+            className='w-full'
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
           />
-        )}
-      </ScrollArea>
+          <div className='flex justify-between'>
+            <div className='hover:bg-slate-200 p-1 mt-2 mx-1 rounded-md active:bg-sky-300'>
+              <ImagePlus />
+            </div>
+            <div
+              onClick={handleClickSendButton}
+              className='hover:bg-slate-200 p-1  mt-2 mx-1 rounded-md active:bg-sky-300'
+            >
+              <Send />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
