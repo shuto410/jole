@@ -1,5 +1,4 @@
 import { Badge, BadgeProps } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
 import { Message } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +21,9 @@ export function Chat({ userId, messages }: ChatProps) {
           <Badge className='px-5 py-3' variant={badgeVariant}>
             <div className='max-w-xs'>{text}</div>
           </Badge>
+          <div className='text-sm bg-white text-secondary-foreground hover:bg-primary/80 border-[1.5px] rounded-lg px-3 py-1 font-semibold transition-colors focus:outline-none'>
+            {text}
+          </div>
         </div>
       </div>
     );

@@ -5,9 +5,11 @@ import {
   Firestore,
   CollectionReference,
   collection,
+  connectFirestoreEmulator,
 } from 'firebase/firestore';
 import { getAuth, Auth, GoogleAuthProvider } from 'firebase/auth';
 import { Chats, PublicUserProfile, UserRelationship } from './types';
+import { setMockBulkUserProfile } from './mock/utils';
 
 // .envファイルで設定した環境変数をfirebaseConfigに入れる
 const firebaseConfig = {
@@ -17,6 +19,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_APP_ID,
+  env: process.env.NEXT_PUBLIC_ENV,
 };
 
 let firebaseApp: FirebaseApp;
@@ -35,6 +38,12 @@ if (typeof window !== 'undefined' && !getApps().length) {
   firebaseApp = initializeApp(firebaseConfig);
   auth = getAuth(firebaseApp);
   firestore = getFirestore();
+  if (firebaseConfig.env === 'development') {
+    console.log('DEVELOPMENT');
+    connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+  } else {
+    console.log('PRODUCTION');
+  }
   analytics = getAnalytics(firebaseApp);
   provider = new GoogleAuthProvider();
   usersCollectionRef = collection(
@@ -49,6 +58,10 @@ if (typeof window !== 'undefined' && !getApps().length) {
     firestore,
     'chats',
   ) as CollectionReference<Chats>;
+
+  if (firebaseConfig.env === 'development') {
+    setMockBulkUserProfile();
+  }
 }
 export {
   firebaseApp,

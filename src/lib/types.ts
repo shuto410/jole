@@ -4,12 +4,14 @@ export type PublicUserProfile = {
   age: number;
   keywords: {
     label: string;
-    link: string;
+    link?: string;
   }[];
-  language: 'Japanese' | 'English';
-  targetLanguage: 'Japanese' | 'English';
+  language: Language;
+  targetLanguage: Language;
   selfIntroduction?: string;
 };
+
+export type Language = 'Japanese' | 'English';
 
 export type PublicUserProfileWithId = PublicUserProfile & {
   id: string;

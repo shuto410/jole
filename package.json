@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev:dev": "NEXT_PUBLIC_ENV=development next dev",
+    "dev:prod": "NEXT_PUBLIC_ENV=production next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

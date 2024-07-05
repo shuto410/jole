@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import {
   relationshipsCollectionRef,
   usersCollectionRef,
@@ -8,6 +8,7 @@ import {
 import {
   Chat,
   Message,
+  PublicUserProfile,
   PublicUserProfileWithId,
   UserRelationship,
 } from './types';

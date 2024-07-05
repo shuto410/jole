@@ -46,7 +46,7 @@ export default function Page() {
       await sendChatMessage(userId, selectedPartnerId, message);
       await fetchData();
       // COMMENT: display message on local immediately
-      // COMMENT: clear message input
+      setMessage('');
     }
   };
 
@@ -91,6 +91,11 @@ export default function Page() {
             className='w-full'
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+              if (e.ctrlKey && e.key === 'Enter') {
+                handleClickSendButton();
+              }
+            }}
           />
           <div className='flex justify-between'>
             <div className='hover:bg-slate-200 p-1 mt-2 mx-1 rounded-md active:bg-sky-300'>

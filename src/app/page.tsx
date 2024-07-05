@@ -1,5 +1,4 @@
 'use client';
-import { LoginButton } from '@/components/buttons/login-button';
 import { SignOutButton } from '@/components/buttons/sign-out-button';
 import { SignUpSection } from '@/components/sign-up-section';
 import { Button } from '@/components/ui/button';

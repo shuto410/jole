@@ -1,23 +1,24 @@
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { PublicUserProfile } from '@/lib/types';
 import Link from 'next/link';
 import { badgeVariants } from './ui/badge';
-import { Card, CardContent } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 
-export function UserCard(props: UserCardProps) {
-  const {
-    name,
-    age,
-    keywords,
-    selfIntroduction,
-    imageUrl,
-    headerButtonLabel,
-    headerIcon,
-    onHeaderButtonClick,
-    onClick,
-  } = props;
-
+export function UserProfilePopup({
+  isOpen,
+  profile,
+  onClickClose,
+}: UserProfilePopupProps) {
+  if (!profile) return null;
+  const { name, age, keywords, selfIntroduction, imageUrl } = profile;
   const keywordBadges = keywords?.map(({ label }) => (
     <span key={label} className='pr-1'>
       <Link
@@ -28,14 +29,12 @@ export function UserCard(props: UserCardProps) {
       </Link>
     </span>
   ));
-
   return (
-    <Card
-      key={name + String(age)}
-      className='block hover:bg-slate-100 active:bg-slate-200'
-      onClick={onClick}
-    >
-      <CardContent className='pt-4'>
+    <Dialog open={isOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>User Profile</DialogTitle>
+        </DialogHeader>
         <div className='flex items-center space-x-4'>
           <Avatar>
             <AvatarImage
@@ -49,35 +48,26 @@ export function UserCard(props: UserCardProps) {
               {age}
             </span>
           </div>
-          <div className='flex-shrink-0'>
-            {headerButtonLabel && (
-              <Button variant='outline' onClick={onHeaderButtonClick}>
-                {headerButtonLabel}
-              </Button>
-            )}
-            {headerIcon && (
-              <div
-                onClick={onHeaderButtonClick}
-                className='rounded-full hover:bg-rose-200 px-2 pt-[0.6rem] pb-[0.4rem]'
-              >
-                {headerIcon}
-              </div>
-            )}
-          </div>
         </div>
         <div className='pt-2'>{keywordBadges}</div>
 
         <div className='text-sm font-medium pt-4 leading-5 line-clamp-4'>
           {selfIntroduction}
         </div>
-      </CardContent>
-    </Card>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type='button' variant='secondary' onClick={onClickClose}>
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export type UserCardProps = PublicUserProfile & {
-  headerButtonLabel?: string;
-  headerIcon?: React.ReactNode;
-  onHeaderButtonClick?: () => void;
-  onClick?: () => void;
+export type UserProfilePopupProps = {
+  isOpen: boolean;
+  profile: PublicUserProfile;
+  onClickClose: () => void;
 };
