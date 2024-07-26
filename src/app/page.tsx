@@ -1,5 +1,5 @@
 'use client';
-import { SignOutButton } from '@/components/buttons/sign-out-button';
+import { LogoutButton } from '@/components/buttons/logout-button';
 import { SignUpSection } from '@/components/sign-up-section';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/firebaseConfig';
@@ -17,7 +17,7 @@ export default function Page() {
         <div>
           <Button onClick={() => checkLoginStatus()}>check google login</Button>
         </div>
-        <SignOutButton />
+        <LogoutButton />
         <Link href='/home'>
           <Button>home</Button>
         </Link>

@@ -3,8 +3,10 @@ import { SignUpSection } from '@/components/sign-up-section';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { UserCard } from '@/components/user-card';
 import { useAllUsers } from '@/hooks/useAllUsers';
+import { useAuthentication } from '@/hooks/useAuthentication';
 
 export default function Page() {
+  const { isUserLoggedIn } = useAuthentication();
   const { allUsers } = useAllUsers();
   return (
     <ScrollArea className='h-screen'>
@@ -15,9 +17,13 @@ export default function Page() {
             <UserCard key={user.id} {...user} />
           ))}
         </div>
-        <div className='w-[250px] mt-4 flex-initial'>
-          <SignUpSection />
-        </div>
+        {!isUserLoggedIn ? (
+          <div className='w-[250px] mt-4 flex-initial'>
+            <SignUpSection />
+          </div>
+        ) : (
+          <div className='w-[250px] mt-4 flex-initial'></div>
+        )}
       </div>
     </ScrollArea>
   );

@@ -1,4 +1,11 @@
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import {
   relationshipsCollectionRef,
   usersCollectionRef,
@@ -7,11 +14,24 @@ import {
 } from '@/lib/firebaseConfig';
 import {
   Chat,
+  Chats,
   Message,
   PublicUserProfile,
   PublicUserProfileWithId,
   UserRelationship,
-} from './types';
+} from '../../types';
+
+export const setUserProfile = async (
+  userProfile: PublicUserProfile,
+  userId: string,
+) => {
+  try {
+    await setDoc(doc(firestore, 'users', userId), userProfile);
+    console.log('Document written, userProfile: ', userProfile);
+  } catch (e) {
+    console.error('Error adding document: ', e);
+  }
+};
 
 export const fetchPublicUserProfile = async (uid: string) => {
   const userDocRef = doc(usersCollectionRef, uid);
@@ -21,6 +41,26 @@ export const fetchPublicUserProfile = async (uid: string) => {
     return userDocSnap.data();
   }
   return null;
+};
+
+export const fetchAllPublicUserProfilesWithId = async () => {
+  const querySnapshot = await getDocs(collection(firestore, 'users'));
+  const docs: PublicUserProfileWithId[] = [];
+  querySnapshot.forEach((doc) => {
+    const profile = doc.data() as PublicUserProfile;
+    docs.push({
+      ...profile,
+      id: doc.id,
+    });
+  });
+  return docs;
+};
+
+export const setUserRelationship = async (
+  relationship: UserRelationship,
+  uid: string,
+) => {
+  await setDoc(doc(firestore, 'relationships', uid), relationship);
 };
 
 export const fetchUserRelationship = async (uid: string) => {
@@ -85,6 +125,10 @@ export const fetchPartnerProfiles = async (uid: string) => {
   );
 };
 
+export const setChats = async (chats: Chats, uid: string) => {
+  await setDoc(doc(firestore, 'chats', uid), chats);
+};
+
 export const fetchAllChats = async (uid: string) => {
   const chatsDocRef = doc(chatsCollectionRef, uid);
   const chatsDocSnap = await getDoc(chatsDocRef);
@@ -117,6 +161,7 @@ export const fetchChatMessages = async (uid: string, partnerId: string) => {
 
 export const sendPartnerRequest = async (uid: string, targetUserId: string) => {
   const userRelationship = await fetchUserRelationship(uid);
+  console.log('Sending Partner Request, userRelationship: ', userRelationship);
   if (!userRelationship) {
     return;
   }
@@ -146,51 +191,67 @@ export const sendPartnerRequest = async (uid: string, targetUserId: string) => {
     doc(firestore, 'relationships', targetUserId),
     newTargetUserRelationship,
   );
+  console.log('Partner Request sent');
 };
 
 export const sendApproveRequest = async (uid: string, targetUserId: string) => {
-  const userRelationship = await fetchUserRelationship(uid);
-  if (!userRelationship) {
-    return;
+  try {
+    const userRelationship = await fetchUserRelationship(uid);
+    if (!userRelationship) {
+      return;
+    }
+
+    const { pendingRequestUserIds } = userRelationship;
+    if (!pendingRequestUserIds.includes(targetUserId)) {
+      return;
+    }
+
+    // Remove targetUserId from pendingRequestUserIds
+    const newPendingRequestUserIds = pendingRequestUserIds.filter(
+      (id) => id !== targetUserId,
+    );
+    const newUserRelationship: UserRelationship = {
+      ...userRelationship,
+      pendingRequestUserIds: newPendingRequestUserIds,
+      partnerUserIds: [...userRelationship.partnerUserIds, targetUserId],
+    };
+    await updateDoc(doc(firestore, 'relationships', uid), newUserRelationship);
+
+    // Also update the target user's relationship to include the current user in their approved list
+    const targetUserRelationship = await fetchUserRelationship(targetUserId);
+    if (!targetUserRelationship) return;
+
+    const { requestingUserIds } = targetUserRelationship;
+    if (!requestingUserIds.includes(uid)) {
+      return;
+    }
+
+    const newTargetUserRequestingUserIds = requestingUserIds.filter(
+      (id) => id !== uid,
+    );
+    const newTargetUserRelationship: UserRelationship = {
+      ...targetUserRelationship,
+      requestingUserIds: newTargetUserRequestingUserIds,
+      partnerUserIds: [...targetUserRelationship.partnerUserIds, uid],
+    };
+    await updateDoc(
+      doc(firestore, 'relationships', targetUserId),
+      newTargetUserRelationship,
+    );
+
+    const chats = await fetchAllChats(uid);
+    await setChats(
+      {
+        ...chats,
+        [uid]: {
+          messages: [],
+        },
+      },
+      uid,
+    );
+  } catch (e) {
+    console.error('Error approving request: ', e);
   }
-
-  const { pendingRequestUserIds } = userRelationship;
-  if (!pendingRequestUserIds.includes(targetUserId)) {
-    return;
-  }
-
-  // Remove targetUserId from pendingRequestUserIds
-  const newPendingRequestUserIds = pendingRequestUserIds.filter(
-    (id) => id !== targetUserId,
-  );
-  const newUserRelationship: UserRelationship = {
-    ...userRelationship,
-    pendingRequestUserIds: newPendingRequestUserIds,
-    partnerUserIds: [...userRelationship.partnerUserIds, targetUserId],
-  };
-  await updateDoc(doc(firestore, 'relationships', uid), newUserRelationship);
-
-  // Also update the target user's relationship to include the current user in their approved list
-  const targetUserRelationship = await fetchUserRelationship(targetUserId);
-  if (!targetUserRelationship) return;
-
-  const { requestingUserIds } = targetUserRelationship;
-  if (!requestingUserIds.includes(uid)) {
-    return;
-  }
-
-  const newTargetUserRequestingUserIds = requestingUserIds.filter(
-    (id) => id !== uid,
-  );
-  const newTargetUserRelationship: UserRelationship = {
-    ...targetUserRelationship,
-    requestingUserIds: newTargetUserRequestingUserIds,
-    partnerUserIds: [...targetUserRelationship.partnerUserIds, uid],
-  };
-  await updateDoc(
-    doc(firestore, 'relationships', targetUserId),
-    newTargetUserRelationship,
-  );
 };
 
 export const sendChatMessage = async (

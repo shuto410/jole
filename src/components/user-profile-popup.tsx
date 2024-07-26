@@ -1,8 +1,6 @@
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -10,10 +8,10 @@ import { PublicUserProfile } from '@/lib/types';
 import Link from 'next/link';
 import { badgeVariants } from './ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
 
 export function UserProfilePopup({
   isOpen,
+  setIsOpen,
   profile,
   onClickClose,
 }: UserProfilePopupProps) {
@@ -30,7 +28,7 @@ export function UserProfilePopup({
     </span>
   ));
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>User Profile</DialogTitle>
@@ -54,13 +52,6 @@ export function UserProfilePopup({
         <div className='text-sm font-medium pt-4 leading-5 line-clamp-4'>
           {selfIntroduction}
         </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type='button' variant='secondary' onClick={onClickClose}>
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -69,5 +60,6 @@ export function UserProfilePopup({
 export type UserProfilePopupProps = {
   isOpen: boolean;
   profile: PublicUserProfile;
+  setIsOpen: (open: boolean) => void;
   onClickClose: () => void;
 };

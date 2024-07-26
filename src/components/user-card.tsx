@@ -4,6 +4,7 @@ import { badgeVariants } from './ui/badge';
 import { Card, CardContent } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 
 export function UserCard(props: UserCardProps) {
   const {
@@ -16,23 +17,29 @@ export function UserCard(props: UserCardProps) {
     headerIcon,
     onHeaderButtonClick,
     onClick,
+    onSeeMoreButtonClick,
   } = props;
 
-  const keywordBadges = keywords?.map(({ label }) => (
-    <span key={label} className='pr-1'>
-      <Link
-        href={`/keyword/${label}`}
-        className={badgeVariants({ variant: 'default' })}
-      >
-        {label}
-      </Link>
-    </span>
-  ));
+  const keywordBadges = keywords?.map(({ label }) => {
+    return (
+      <span key={name + label} className='pr-1'>
+        <Link
+          href={`/keyword/${label}`}
+          className={badgeVariants({ variant: 'default' })}
+        >
+          {label}
+        </Link>
+      </span>
+    );
+  });
 
   return (
     <Card
       key={name + String(age)}
-      className='block hover:bg-slate-100 active:bg-slate-200'
+      className={cn(
+        'block',
+        onClick && 'hover:bg-slate-100 active:bg-slate-200',
+      )}
       onClick={onClick}
     >
       <CardContent className='pt-4'>
@@ -80,4 +87,5 @@ export type UserCardProps = PublicUserProfile & {
   headerIcon?: React.ReactNode;
   onHeaderButtonClick?: () => void;
   onClick?: () => void;
+  onSeeMoreButtonClick?: () => void;
 };

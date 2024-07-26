@@ -41,6 +41,7 @@ if (typeof window !== 'undefined' && !getApps().length) {
   if (firebaseConfig.env === 'development') {
     console.log('DEVELOPMENT');
     connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+    // connectAuthEmulator(auth, 'http://127.0.0.1:9099 ');
   } else {
     console.log('PRODUCTION');
   }

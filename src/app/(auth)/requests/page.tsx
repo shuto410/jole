@@ -1,16 +1,16 @@
 'use client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { UserCard } from '@/components/user-card';
-import { UserAuthContext } from '@/contexts/user-auth-context';
+import { useAuthentication } from '@/hooks/useAuthentication';
 import {
   fetchPendingRequestingUsers,
   sendApproveRequest,
-} from '@/lib/firebaseApi';
+} from '@/lib/firebaseApi/firestore';
 import { PublicUserProfileWithId } from '@/lib/types';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Page() {
-  const { userId } = useContext(UserAuthContext);
+  const { userId } = useAuthentication();
   const [requestingUserProfiles, setRequestingUserProfiles] = useState<
     PublicUserProfileWithId[]
   >([]);

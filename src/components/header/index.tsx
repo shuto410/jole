@@ -1,11 +1,15 @@
 'use client';
 import Link from 'next/link';
-import { UserDialogButton } from './user-dialog-button';
-import { UserAuthContext } from '@/contexts/user-auth-context';
-import { useContext } from 'react';
+import { useState } from 'react';
+import { UserMenuButton } from './user-menu-button';
+import { UserProfileUpdatePopup } from './user-profile-edit-popup';
+import { useAuthentication } from '@/hooks/useAuthentication';
+import { Button } from '../ui/button';
+import { fetchPendingRequestingUsers } from '@/lib/firebaseApi/firestore';
 
 export function Header() {
-  const { userId } = useContext(UserAuthContext);
+  const { userId } = useAuthentication();
+  const [isUserProfilePopupOpen, setIsUserProfilePopupOpen] = useState(false);
   return (
     <>
       <nav className='flex py-1 pl-4 justify-between items-center border-b border-slate-300'>
@@ -32,11 +36,24 @@ export function Header() {
                   Requests
                 </span>
               </Link>
+              {userId}
+              <Button
+                onClick={async () => {
+                  const res = await fetchPendingRequestingUsers(userId);
+                  console.log(res);
+                }}
+              />
             </>
           )}
         </div>
-        <div className='flex px-2'>
-          <UserDialogButton />
+        <div className='flex px-2 mr-2'>
+          <UserMenuButton
+            setIsUserProfilePopupOpen={setIsUserProfilePopupOpen}
+          />
+          <UserProfileUpdatePopup
+            isOpen={isUserProfilePopupOpen}
+            setIsOpen={setIsUserProfilePopupOpen}
+          />
         </div>
       </nav>
     </>

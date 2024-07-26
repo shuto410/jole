@@ -91,7 +91,7 @@ const generateRandomLanguage = (): Language => {
 };
 
 const generateRandomKeywords = (): { label: string }[] => {
-  const keywords: { label: string }[] = [];
+  const keywords = new Set<string>();
   const numKeywords = Math.floor(Math.random() * 3) + 1;
   const availableKeywords = [
     'Manga',
@@ -104,11 +104,11 @@ const generateRandomKeywords = (): { label: string }[] => {
 
   for (let i = 0; i < numKeywords; i++) {
     const randomIndex = Math.floor(Math.random() * availableKeywords.length);
-    const keyword = { label: availableKeywords[randomIndex] };
-    keywords.push(keyword);
+    const keyword = availableKeywords[randomIndex];
+    keywords.add(keyword);
   }
 
-  return keywords;
+  return Array.from(keywords, (keyword) => ({ label: keyword }));
 };
 
 const generateRandomSentence = (): string => {

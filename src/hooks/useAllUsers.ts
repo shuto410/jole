@@ -1,6 +1,5 @@
-import { firestore } from '@/lib/firebaseConfig';
-import { PublicUserProfile, PublicUserProfileWithId } from '@/lib/types';
-import { collection, getDocs } from 'firebase/firestore';
+import { fetchAllPublicUserProfilesWithId } from '@/lib/firebaseApi/firestore';
+import { PublicUserProfileWithId } from '@/lib/types';
 import { useEffect, useState } from 'react';
 
 export const useAllUsers = () => {
@@ -8,22 +7,12 @@ export const useAllUsers = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const querySnapshot = await getDocs(collection(firestore, 'users'));
-      const docs: PublicUserProfileWithId[] = [];
-      querySnapshot.forEach((doc) => {
-        const profile = doc.data() as PublicUserProfile;
-        docs.push({
-          ...profile,
-          id: doc.id,
-        });
-      });
-      setAllUsers(docs);
+      setAllUsers(await fetchAllPublicUserProfilesWithId());
     }
     fetchData();
   }, []);
 
   return {
     allUsers,
-    setAllUsers,
   };
 };

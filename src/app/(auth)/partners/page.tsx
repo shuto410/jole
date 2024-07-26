@@ -2,21 +2,21 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PartnerList } from './partner-list';
 import { Chat } from './chat';
-import { useContext, useEffect, useState } from 'react';
-import { UserAuthContext } from '@/contexts/user-auth-context';
+import { useEffect, useState } from 'react';
 import {
   fetchAllChats,
   fetchPartnerProfiles,
   sendChatMessage,
-} from '@/lib/firebaseApi';
+} from '@/lib/firebaseApi/firestore';
 import { Chats } from '@/lib/types';
 import { Textarea } from '@/components/ui/textarea';
 import { Send, ImagePlus } from 'lucide-react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { chatsCollectionRef } from '@/lib/firebaseConfig';
+import { useAuthentication } from '@/hooks/useAuthentication';
 
 export default function Page() {
-  const { userId } = useContext(UserAuthContext);
+  const { userId } = useAuthentication();
   const [partnerProfiles, setPartnerProfiles] = useState<PartnerProfile[]>([]);
   const [chats, setChats] = useState<Chats>({});
   const [selectedPartnerId, setSelectedPartnerId] = useState<

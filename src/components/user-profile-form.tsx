@@ -27,6 +27,9 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
 import { PublicUserProfile } from '@/lib/types';
+import { UserAuthContext } from '@/contexts/user-auth-context';
+import { useContext } from 'react';
+import { fetchPublicUserProfile } from '@/lib/firebaseApi/firestore';
 
 export function UserProfileForm({
   defaultValues,
@@ -35,6 +38,7 @@ export function UserProfileForm({
   onSuccess,
 }: UserProfileFormProps) {
   const { toast } = useToast();
+  const { setUserProfile } = useContext(UserAuthContext);
 
   const formSchema = z.object({
     name: z
@@ -64,6 +68,10 @@ export function UserProfileForm({
       // const docRef = await addDoc(collection(firestore, 'users'), user);
       await setDoc(doc(firestore, 'users', userId), userProfile);
       console.log('Document written');
+      const updatedUserProfile = await fetchPublicUserProfile(userId);
+      if (updatedUserProfile) {
+        setUserProfile(updatedUserProfile);
+      }
       onSuccess?.();
       toast({
         title: 'You submitted the profile.',

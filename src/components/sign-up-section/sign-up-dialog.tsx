@@ -6,15 +6,32 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { UserProfileForm } from '../user-profile-form';
+import { useContext } from 'react';
+import { UiContext } from '@/contexts/ui-context';
+import { useRouter } from 'next/navigation';
+import { useAuthentication } from '@/hooks/useAuthentication';
 
-export function SignUpDialog({
-  isOpen,
-  userId,
-  onSignUpSuccess,
-}: SignUpDialogProps) {
+export function SignUpPopup({ userId }: SignUpPopupProps) {
+  const { logout } = useAuthentication();
+  const { isSignUpPopupOpen, setIsSignUpPopupOpen } = useContext(UiContext);
+  const router = useRouter();
+
   if (!userId) return null;
+
+  const handleOnSignupSuccess = () => {
+    router.refresh();
+    setIsSignUpPopupOpen(false);
+  };
+
+  const handleOnOpenChange = (open: boolean) => {
+    setIsSignUpPopupOpen(open);
+    if (!open) {
+      logout(false);
+    }
+  };
+
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isSignUpPopupOpen} onOpenChange={handleOnOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Sign Up</DialogTitle>
@@ -25,15 +42,13 @@ export function SignUpDialog({
         <UserProfileForm
           userId={userId}
           submitButtonText='Complete'
-          onSuccess={onSignUpSuccess}
+          onSuccess={handleOnSignupSuccess}
         />
       </DialogContent>
     </Dialog>
   );
 }
 
-export type SignUpDialogProps = {
-  isOpen: boolean;
+export type SignUpPopupProps = {
   userId: string | null;
-  onSignUpSuccess?: () => void;
 };
