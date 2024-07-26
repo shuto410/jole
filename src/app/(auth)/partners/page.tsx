@@ -14,6 +14,7 @@ import { Send, ImagePlus } from 'lucide-react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { chatsCollectionRef } from '@/lib/firebaseConfig';
 import { useAuthentication } from '@/hooks/useAuthentication';
+import { NoPartners } from './no-partners';
 
 export default function Page() {
   const { userId } = useAuthentication();
@@ -64,6 +65,10 @@ export default function Page() {
       setSelectedPartnerId(partnerProfiles?.[0]?.id);
     }
   }, [partnerProfiles, selectedPartnerId]);
+
+  if (partnerProfiles && partnerProfiles.length === 0) {
+    return <NoPartners />;
+  }
 
   return (
     <div className='flex'>

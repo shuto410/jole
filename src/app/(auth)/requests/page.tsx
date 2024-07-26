@@ -8,6 +8,7 @@ import {
 } from '@/lib/firebaseApi/firestore';
 import { PublicUserProfileWithId } from '@/lib/types';
 import { useEffect, useState } from 'react';
+import { NoRequests } from './no-requests';
 
 export default function Page() {
   const { userId } = useAuthentication();
@@ -34,6 +35,9 @@ export default function Page() {
       });
     }
   };
+  if (requestingUserProfiles && requestingUserProfiles.length === 0) {
+    return <NoRequests />;
+  }
 
   return (
     <div className='flex justify-center'>
