@@ -8,12 +8,13 @@ import { PublicUserProfile } from '@/lib/types';
 import Link from 'next/link';
 import { badgeVariants } from './ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Heart } from 'lucide-react';
 
 export function UserProfilePopup({
   isOpen,
   setIsOpen,
   profile,
-  onClickClose,
+  onRequestButtonClick,
 }: UserProfilePopupProps) {
   if (!profile) return null;
   const { name, age, keywords, selfIntroduction, imageUrl } = profile;
@@ -41,10 +42,22 @@ export function UserProfilePopup({
             <AvatarFallback>OM</AvatarFallback>
           </Avatar>
           <div className='flex-grow'>
-            <span className='text-sm font-medium '>{name}</span>
-            <span className='text-sm font-medium text-muted-foreground pl-2'>
-              {age}
-            </span>
+            <div className='flex items-center justify-between'>
+              <div>
+                <span className='text-sm font-medium '>{name}</span>
+                <span className='text-sm font-medium text-muted-foreground pl-2'>
+                  {age}
+                </span>
+              </div>
+              <div className='pr-6'>
+                <div
+                  onClick={onRequestButtonClick}
+                  className='rounded-full hover:bg-rose-200 active:bg-rose-500 px-2 pt-[0.5rem] pb-[0.4rem]'
+                >
+                  <Heart />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div className='pt-2'>{keywordBadges}</div>
@@ -61,5 +74,5 @@ export type UserProfilePopupProps = {
   isOpen: boolean;
   profile: PublicUserProfile;
   setIsOpen: (open: boolean) => void;
-  onClickClose: () => void;
+  onRequestButtonClick: () => void;
 };

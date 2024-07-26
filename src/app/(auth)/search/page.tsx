@@ -2,7 +2,7 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-import { Heart, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useState } from 'react';
@@ -10,15 +10,16 @@ import { UserCard } from '@/components/user-card';
 import { sendPartnerRequest } from '@/lib/firebaseApi/firestore';
 import { useAllUsers } from '@/hooks/useAllUsers';
 import { UserProfilePopup } from '@/components/user-profile-popup';
-import { PublicUserProfile } from '@/lib/types';
+import { PublicUserProfileWithId } from '@/lib/types';
 import { useAuthentication } from '@/hooks/useAuthentication';
+import { toast } from '@/components/ui/use-toast';
 
 export default function Page() {
   const { userId } = useAuthentication();
   const { allUsers } = useAllUsers();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedUserProfile, setSelectedUserProfile] = useState<
-    PublicUserProfile | undefined
+    PublicUserProfileWithId | undefined
   >(undefined);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(allUsers);
@@ -27,10 +28,14 @@ export default function Page() {
     setFilteredUsers(allUsers);
   }, [allUsers]);
 
-  const handleHeaderButtonClick = (targetUserId: string) => () => {
+  const handleRequestButtonClick = (targetUserId: string) => {
     if (userId) {
-      console.log('send partner request:', userId, targetUserId);
       sendPartnerRequest(userId, targetUserId);
+      toast({
+        title: 'You sent a partner request!',
+      });
+    } else {
+      console.error('userId is not defined');
     }
   };
 
@@ -70,9 +75,7 @@ export default function Page() {
               >
                 <UserCard
                   {...user}
-                  headerIcon={<Heart />}
-                  onHeaderButtonClick={handleHeaderButtonClick(user.id)}
-                  onSeeMoreButtonClick={() => {
+                  onClick={() => {
                     setSelectedUserProfile(user);
                     setIsOpen(true);
                   }}
@@ -86,7 +89,10 @@ export default function Page() {
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             profile={selectedUserProfile}
-            onClickClose={() => setIsOpen(false)}
+            onRequestButtonClick={() => {
+              handleRequestButtonClick(selectedUserProfile.id);
+              setIsOpen(false);
+            }}
           />
         )}
       </div>

@@ -12,13 +12,28 @@ import {
 import { CreditCard, LogOut, Settings, User, Users } from 'lucide-react';
 import { useAuthentication } from '@/hooks/useAuthentication';
 import { UserAuthContext } from '@/contexts/user-auth-context';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
+import { fetchPublicUserProfile } from '@/lib/firebaseApi/firestore';
 
 export function UserMenuButton({
   setIsUserProfilePopupOpen,
 }: UserMenuButtonProps) {
-  const { isUserLoggedIn, login, logout } = useAuthentication();
-  const { userProfile } = useContext(UserAuthContext);
+  const { isUserLoggedIn, userId, login, logout } = useAuthentication();
+  const { userProfile, setUserProfile } = useContext(UserAuthContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (userId) {
+        const userProfile = await fetchPublicUserProfile(userId);
+        if (userProfile) {
+          setUserProfile(userProfile);
+        } else {
+          setUserProfile(undefined);
+        }
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   return (
     <DropdownMenu>
