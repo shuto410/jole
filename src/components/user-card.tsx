@@ -74,7 +74,7 @@ export function UserCard(props: UserCardProps) {
         </div>
         <div className='pt-2'>{keywordBadges}</div>
 
-        <div className='text-sm font-medium pt-4 leading-5 line-clamp-4'>
+        <div className='text-sm pt-4 leading-5 line-clamp-4'>
           {selfIntroduction}
         </div>
       </CardContent>

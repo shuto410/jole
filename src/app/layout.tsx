@@ -1,5 +1,4 @@
 'use client';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { UserAuthContext } from '@/contexts/user-auth-context';
@@ -7,8 +6,7 @@ import { useState } from 'react';
 import { UiContext } from '@/contexts/ui-context';
 import { SignUpPopup } from '@/components/sign-up-section/sign-up-dialog';
 import { PublicUserProfile } from '@/lib/types';
-
-const inter = Inter({ subsets: ['latin'] });
+import { GeistSans } from 'geist/font/sans';
 
 export default function RootLayout({
   children,
@@ -25,8 +23,8 @@ export default function RootLayout({
       value={{ userId, setUserId, userProfile, setUserProfile }}
     >
       <UiContext.Provider value={{ isSignUpPopupOpen, setIsSignUpPopupOpen }}>
-        <html lang='en'>
-          <body className={inter.className}>
+        <html lang='en' className={GeistSans.className}>
+          <body>
             <div>{children}</div>
             <Toaster />
             <SignUpPopup userId={userId} />

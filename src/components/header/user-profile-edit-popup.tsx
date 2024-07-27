@@ -15,14 +15,7 @@ export function UserProfileUpdatePopup({
   isOpen,
   setIsOpen,
 }: UserProfileEditPopupProps) {
-  const { userId, isUserLoggedIn } = useAuthentication(async (userId) => {
-    // console.log('User ID in call back', userId);
-    // const userProfile = await fetchPublicUserProfile(userId);
-    // if (userProfile) setPublicUserProfile(userProfile);
-  });
-  // // const [publicUserProfile, setPublicUserProfile] = useState<
-  // //   PublicUserProfile | undefined
-  // >(undefined);
+  const { userId, isUserLoggedIn } = useAuthentication();
   const { userProfile } = useContext(UserAuthContext);
 
   useEffect(() => {
@@ -37,7 +30,7 @@ export function UserProfileUpdatePopup({
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Update Profile</DialogTitle>
+            <DialogTitle>Profile</DialogTitle>
           </DialogHeader>
           <UserProfileForm
             userId={userId!}

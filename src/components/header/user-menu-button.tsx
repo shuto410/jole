@@ -48,7 +48,7 @@ export function UserMenuButton({
           {isUserLoggedIn && userProfile ? (
             <>
               <DropdownMenuLabel>
-                <span className='font-thin text-slate-600 text-sm'>
+                <span className='font-light text-slate-600 text-sm'>
                   {userProfile?.name}
                 </span>
               </DropdownMenuLabel>
