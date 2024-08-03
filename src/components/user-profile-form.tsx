@@ -30,6 +30,7 @@ import { PublicUserProfile } from '@/lib/types';
 import { UserAuthContext } from '@/contexts/user-auth-context';
 import { useContext } from 'react';
 import { fetchPublicUserProfile } from '@/lib/firebaseApi/firestore';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 export function UserProfileForm({
   defaultValues,
@@ -41,6 +42,7 @@ export function UserProfileForm({
   const { setUserProfile } = useContext(UserAuthContext);
 
   const formSchema = z.object({
+    imageUrl: z.string().url(),
     name: z
       .string()
       .min(2, { message: 'User name must be at least 2 characters.' })
@@ -55,6 +57,7 @@ export function UserProfileForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
+      imageUrl: '',
       name: '',
       selfIntroduction: '',
     },
@@ -98,7 +101,6 @@ export function UserProfileForm({
     }
     const userProfile: PublicUserProfile = {
       ...values,
-      imageUrl: `https://picsum.photos/seed/${values.name}/200/200`,
       keywords: [],
       targetLanguage: values.language === 'Japanese' ? 'English' : 'Japanese',
     };
@@ -108,6 +110,30 @@ export function UserProfileForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
+        <FormField
+          control={form.control}
+          name='imageUrl'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Icon Image</FormLabel>
+              <div className='flex'>
+                <Avatar className='mr-4'>
+                  <AvatarImage src={form.getValues().imageUrl} />
+                  <AvatarFallback>OM</AvatarFallback>
+                </Avatar>
+                <div className='w-full'>
+                  <FormControl>
+                    <Input
+                      placeholder='https://www.jole.com/image.jpg'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </div>
+              </div>
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name='name'

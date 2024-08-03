@@ -43,7 +43,7 @@ export function UserCard(props: UserCardProps) {
       onClick={onClick}
     >
       <CardContent className='pt-4'>
-        <div className='flex items-center space-x-4'>
+        <div className='flex items-center space-x-2'>
           <Avatar>
             <AvatarImage
               src={imageUrl ?? `https://picsum.photos/seed/${name}/200/200`}
